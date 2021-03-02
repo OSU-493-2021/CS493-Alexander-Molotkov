@@ -2,6 +2,14 @@
   text-align: center;
 }
 
+ul {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    margin-top: 5%;
+    margin-right: 5%
+}
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;
@@ -11,6 +19,106 @@
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
   }
+}
+
+.artistName{  
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 3%;
+  width: 60%;
+  background-color: white;
+  color: #0074df;
+  font-size:  26px;
+
+}
+
+
+.albumName{  
+  margin-bottom: 3%;
+  width: 80%;
+  background-color: white;
+  color: #0074df;
+  font-size:  26px;
+}
+
+.songName{  
+  margin-bottom: 3%;
+  width: 80%;
+  background-color: white;
+  color: #0074df;
+  font-size:  26px;
+}
+
+
+.header {
+
+  text-align:center !important;
+  margin: auto;
+  margin-top:20px;
+  width: 90%;
+  padding: 10px;
+  font-size:  26px;
+  display:inline-block;
+
+}
+
+.bodyBox{
+
+  background-color: #C4C4C4;
+  position:absolute;
+  width: 90%;
+  height: 80%;
+  margin-top: 3%;
+  margin-left: 5%;
+  margin-right: 5%;
+  margin-bottom: 3%;
+  text-align:center;
+}
+
+.artistBodyBox{
+
+  background-color: white;
+  position:absolute;
+  width: 90%;
+  height: 80%;
+  margin-top: 3%;
+  margin-left: 5%;
+  margin-right: 5%;
+  margin-bottom: 3%;
+  text-align:center;
+  padding: 20px;
+
+}
+
+#back{
+
+  margin-left:3%;
+  margin-right:50%;
+}
+
+.albums{
+  background-color: #C4C4C4;
+  width: 30%;
+  height: 90%;
+  float: left;
+  padding: 20px;
+  text-align:center;
+}
+
+.songs{
+  background-color: #C4C4C4;
+  width: 57%;
+  height: 90%;
+  float: right;
+  padding: 20px;
+  margin-right: 3%;
+  list-style:none;
+}
+
+#signOut {
+
+  float:right;
+
 }
 
 button {
@@ -55,11 +163,6 @@ input{
   margin-left: 50px;
   margin-right: 50px;
   color: #000000
-}
-
-#signOut {
-
-  margin-bottom: 50px;
 }
 
 @keyframes App-logo-spin {
