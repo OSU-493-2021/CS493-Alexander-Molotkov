@@ -39,6 +39,8 @@ export default function Controller(){
       </Route>
       <Route path = "/artist/:artist" children ={<ArtistPage />}>
       </Route>
+      <Route path = "/401" children={<FourohonePage />}>
+      </Route>
     </Switch>
     </Router>
   )
@@ -71,8 +73,8 @@ function Login() {
               .auth()
               .createUserWithEmailAndPassword(email, password).then((user) => {
                 // User created and signed in
-               
-                window.location.href = "main"
+                localStorage.setItem("auth", true)
+                window.location.href = "/main"
               })
               .catch((error) => {
                 //Error with creating users
@@ -91,8 +93,8 @@ function Login() {
           await firebase.auth().signInWithEmailAndPassword(email, password).then((user) => {
             //Signed in
             
-            window.location.href = "main"
-            //showUserInfo(user.user.email);
+            localStorage.setItem("auth", true)
+            window.location.href = "/main"
           })
           .catch((error) => {
             //Error with logging in
@@ -112,9 +114,9 @@ function Login() {
           .signInWithPopup(provider)
           .then((result) => {
             //Signed in
-
-            window.location.href = "main"
-            //showUserInfo(result.user.email);
+            
+            localStorage.setItem("auth", true)
+            window.location.href = "/main"
           })
           .catch((error) => {
             //Error with logging in
@@ -138,10 +140,15 @@ function MainPage(){
 
   window.addEventListener('load', function(){
 
-    var d
+
+    console.log(localStorage.getItem("auth"))
+    if(localStorage.getItem("auth") === "false"){
+      window.location.href = "/401"
+    }
+
     var response = fetch('https://oaysqwb5t8.execute-api.us-east-1.amazonaws.com/dev/artists').then(response => response.json()).then((data) =>{ console.log(data)
 
-    var artists = data
+    var artists = data.Artists
     var artistList  = document.getElementById("artists");
 
     for (var i = 0; i < artists.length; i++){
@@ -161,7 +168,7 @@ function MainPage(){
     <div className="MainPage">
 
       <div className="header"> Artists 
-          <button id="signOut" onClick = { function() {window.location.href = "/"}}>Log Out</button>
+          <button id="signOut" onClick = { function() {window.location.href = "/"; localStorage.setItem("auth", false)}}>Log Out</button>
       </div>
       <div className="bodyBox">
         <ul className = "artists" id="artists">
@@ -174,8 +181,12 @@ function MainPage(){
 
 function ArtistPage(){
 
-  let { artist } = useParams()
+    console.log(localStorage.getItem("auth"))
+    if(localStorage.getItem("auth") === "false"){
+      window.location.href = "/401"
+    }
 
+  let { artist } = useParams()
 
   console.log("artistPage")
 
@@ -183,42 +194,26 @@ function ArtistPage(){
 
     var header = document.getElementById("header").innerText.split(' ')
     var artist = header[1] + " " + header[2]
-    var response = fetch('https://oaysqwb5t8.execute-api.us-east-1.amazonaws.com/dev/albums?artist=' + artist ).then(response => response.json()).then((data) =>{ 
+    var response = fetch('https://oaysqwb5t8.execute-api.us-east-1.amazonaws.com/dev/albums/for/artist?artist=' + artist ).then(response => response.json()).then((data) =>{ 
       
-    console.log(data)
+      console.log(data)
 
-    var albums = []
+      var albums = data.Albums
 
-    for(var x = 0; x < data.Contents.length; x++){
+      var artistlist = document.getElementById("albums")
 
-      console.log(data.Contents[x])
-      var s = data.Contents[x].Key.split('/')
-          if(s.length > 3){
-            
-            if (albums.includes(s[2]) == false){
+      for (var i = 0; i < albums.length; i++){
 
-              albums.push(s[2])
+        let li = document.createElement("li")
+        let button = document.createElement("button")
+        button.className = "albumName"
+        button.innerText = albums[i];
 
-            }
-          }
-          console.log(s)
-
-    }
-
-    var artistlist = document.getElementById("albums")
-
-    for (var i = 0; i < albums.length; i++){
-
-      let li = document.createElement("li")
-      let button = document.createElement("button")
-      button.className = "albumName"
-      button.innerText = albums[i];
-
-      button.setAttribute('onClick', "{window.location.href= ('/artist/' + '" + artist + "' + '/' + this.innerHTML)};")
-      artistlist.appendChild(li);
-      li.appendChild(button);
-    }
-  })
+        button.setAttribute('onClick', "{window.location.href= ('/artist/' + '" + artist + "' + '/' + this.innerHTML)};")
+        artistlist.appendChild(li);
+        li.appendChild(button);
+      }
+    })
   })
 
   return(
@@ -227,7 +222,7 @@ function ArtistPage(){
       <div className="header" id="header"> 
           <button id="back" onClick = { function() {window.location.href = "/main"}}>Back</button>
           Artist {artist} :
-          <button id="signOut" onClick = { function() {window.location.href = "/"}}>Log Out</button>
+          <button id="signOut" onClick = { function() {window.location.href = "/"; localStorage.setItem("auth", false)}}>Log Out</button>
       </div>
 
         <div className="artistBodyBox">
@@ -253,86 +248,88 @@ function ArtistPage(){
 }
 
 function AlbumPage(){
+
+    console.log(localStorage.getItem("auth"))
+    if(localStorage.getItem("auth") === "false"){
+      window.location.href = "/401"
+    }
+
   let { artist, album } = useParams()
-
-
 
   window.addEventListener('load', function(){
 
-    var songList = document.getElementById("songs")
-  
-    var artistList  = document.getElementById("artists");
-
     var header = document.getElementById("header").innerText.split(' ')
-    var artist = header[1] + " " + header[2]
-    console.log(artist)
-    var response = fetch('https://oaysqwb5t8.execute-api.us-east-1.amazonaws.com/dev/albums?artist=' + artist ).then(response => response.json()).then((data) =>{ 
-    console.log(data)
+    var response = fetch('https://oaysqwb5t8.execute-api.us-east-1.amazonaws.com/dev/albums/for/artist?artist=' + artist ).then(response => response.json()).then((data) =>{ 
+      
+      console.log(data)
 
-    var albums = []
+      var albums = data.Albums
 
-    for(var x = 0; x < data.Contents.length; x++){
+      var artistlist = document.getElementById("albums")
 
-      console.log(data.Contents[x])
-      var s = data.Contents[x].Key.split('/')
-          if(s.length > 3){
-            
-            if (albums.includes(s[2]) == false){
+      for (var i = 0; i < albums.length; i++){
 
-              albums.push(s[2])
-            }
-          }
-          console.log(s)
-    }
-    var artistlist = document.getElementById("albums")
-    console.log(albums)
+        let li = document.createElement("li")
+        let button = document.createElement("button")
+        button.className = "albumName"
+        button.innerText = albums[i];
 
-    for (var i = 0; i < albums.length; i++){
+        button.setAttribute('onClick', "{window.location.href= ('/artist/' + '" + artist + "' + '/' + this.innerHTML)};")
+        artistlist.appendChild(li);
+        li.appendChild(button);
+      }
+    })
 
-      let li = document.createElement("li")
-      let button = document.createElement("button")
-      button.className = "albumName"
-      button.innerText = albums[i];
+    var response = fetch('https://oaysqwb5t8.execute-api.us-east-1.amazonaws.com/dev/songs/for/album?album=' + album).then(response => response.json()).then((data) =>{ 
+      
+      console.log(data)
 
-      button.setAttribute('onClick', "{window.location.href= ('/artist/' + '" + artist + "' + '/' + this.innerHTML)};")
-      artistlist.appendChild(li);
-      li.appendChild(button);
-    }
+      var audio = new Audio()
+
+      var songs = data.Songs
+
+      var songlist = document.getElementById("songs")
+
+      for (var i = 0; i < songs.length; i++){
+
+        let li = document.createElement("li")
+        let button = document.createElement("button")
+        button.className = "songName"
+        button.innerText = songs[i];
+
+        // eslint-disable-next-line no-loop-func
+        button.addEventListener("click", function(){
+
+          console.log(this.innerText)
+          var response = fetch('https://oaysqwb5t8.execute-api.us-east-1.amazonaws.com/dev/song?song=' + button.innerText).then(response => response.json()).then((data) =>{ 
+
+            audio.pause()
+            audio = new Audio(data.SongURL)
+            audio.play()
+          })
+
+          var url = "https://oaysqwb5t8.execute-api.us-east-1.amazonaws.com/dev/play";
+
+          fetch(url, {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              Song: button.innerText,
+              Album: album,
+              Artist: artist
+            })
+          })
+        });
+
+        songlist.appendChild(li);
+        li.appendChild(button);
 
 
-    console.log(album)
-
-    var songs = []
-
-    
-    for(var o = 0; o < data.Contents.length; o++){
-
-      console.log(data.Contents[o])
-      var s = data.Contents[o].Key.split('/')
-          if(s.length > 3){
-            
-            if ((s[2]) === album){
-              
-              if(s[3] !== undefined){
-              songs.push(s[3])
-              }
-            }
-          }
-          console.log(s)
-    }
-    songs.shift()
-
-    for (var j = 0; j < songs.length; j++){
-
-      let li = document.createElement("li")
-      let button = document.createElement("button")
-      button.className = "songName"
-      button.innerText = songs[j];
-      li.appendChild(button)
-      songList.appendChild(li);
-    }
-
-  })
+      }
+    })
   })
 
   return(
@@ -340,8 +337,8 @@ function AlbumPage(){
     <div className = "ArtistPage">
       <div className="header" id ="header"> 
           <button id="back" onClick = { function() {window.location.href = "/main"}}>Back</button>
-          Artist {artist} :
-          <button id="signOut" onClick = { function() {window.location.href = "/"}}>Log Out</button>
+          Album {album} :
+          <button id="signOut" onClick = { function() {window.location.href = "/"; localStorage.setItem("auth", false)}}>Log Out</button>
       </div>
 
         <div className="artistBodyBox">
@@ -358,6 +355,17 @@ function AlbumPage(){
         </div>
     <script>
     </script>
+    </div>
+  )
+}
+
+function FourohonePage(){
+  return(
+    <div className = "401Page">
+      <h1> Access Denied </h1>
+
+          <button onClick={function () { window.location.href="./" }}>Log In</button>
+
     </div>
   )
 }
